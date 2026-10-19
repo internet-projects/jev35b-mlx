@@ -1,0 +1,12 @@
+{
+  "model": "autotrust/JEV-35B",
+  "measured": "19 October 2026, MacBook Pro M5 Max (128 GB), mlx 0.32.3, mlx-vlm 0.7.6",
+  "prompt_set": "231 decisions built from the JevBench public set (scripts/jevbench_to_requests.py)",
+  "reference": "the original bf16 weights, converted to MLX without quantization (scripts/convert.py ... bf16)",
+  "builds": {
+    "JEV-35B-mlx-8bit":       {"size_gb": 36, "active_memory_gb": 37.7, "same_top_answer": "228/231", "kl_mean": 0.0020, "kl_p95": 0.009, "warm_median_ms": 164, "warm_p95_ms": 1037, "vision_check": "4/4"},
+    "JEV-35B-mlx-4bit-mixed": {"size_gb": 21, "active_memory_gb": 21.6, "same_top_answer": "225/231", "kl_mean": 0.0036, "kl_p95": 0.021, "warm_median_ms": 109, "warm_p95_ms": 246,  "vision_check": "4/4"},
+    "JEV-35B-mlx-3bit-mixed": {"size_gb": 17, "active_memory_gb": 17.6, "same_top_answer": "224/231", "kl_mean": 0.0116, "kl_p95": 0.056, "warm_median_ms": 99,  "warm_p95_ms": 234,  "vision_check": "4/4"}
+  },
+  "speed_note": "one request at a time, 120 prompts (median 94 prompt tokens), second pass after a full warm-up pass, with other models running on the same Mac"
+}
