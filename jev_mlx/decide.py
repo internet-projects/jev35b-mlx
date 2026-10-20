@@ -15,6 +15,7 @@ import mlx.core as mx
 MAX_OPTIONS = 256
 IMAGE_SLOT = "<|vision_start|><|image_pad|><|vision_end|>"
 PREFILL_CHUNK = 2048
+CACHE_LIMIT = 1 << 30   # cap MLX's buffer cache: freed GPU buffers otherwise pile up across prompt lengths
 KINDS = ("choice", "noul", "score")
 _DATA_URI = re.compile(r"^data:image/[\w.+-]+;base64,(.*)$", re.S)
 
@@ -51,8 +52,11 @@ def _local_path(path_or_repo: str) -> str:
 class Jev:
     """Load once, then call decide(). Not thread-safe: serialise calls (the server does)."""
 
-    def __init__(self, path_or_repo: str):
+    def __init__(self, path_or_repo: str, memory_limit_gb: float | None = None):
         from mlx_vlm import load
+        mx.set_cache_limit(CACHE_LIMIT)
+        if memory_limit_gb:
+            mx.set_memory_limit(int(memory_limit_gb * 1e9))
         self.path = _local_path(path_or_repo)
         t0 = time.perf_counter()
         self.model, self.processor = load(self.path)
@@ -153,6 +157,8 @@ class Jev:
         text, imgs = self._parts(state)
         logits, n_tok = self._last_logits(self._prompt(kind, text, question, opts if kind == "choice" else None), imgs)
         p = mx.softmax((logits[mx.array(ids)] + mx.array(bias)) / self.temps[kind]).tolist()
+        del logits
+        mx.clear_cache()                                       # release this prompt's working buffers
         i = max(range(len(p)), key=p.__getitem__)
         return {"options": opts, "probabilities": p, "choice": opts[i], "choice_index": i,
                 "usage": {"prompt_tokens": n_tok, "completion_tokens": 0, "images": len(imgs)}}

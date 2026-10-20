@@ -106,6 +106,10 @@ Convert before serving: loading autotrust's checkpoint straight into mlx-vlm re-
 - [NVIDIA Nemotron-Labs Dory 1.0 4B on MLX](https://github.com/internet-projects/dory-mlx)
 - [NetProjects on Hugging Face](https://huggingface.co/netprojects)
 
+## Changes
+
+- **1.0.1** (20 October 2026): MLX's buffer cache is capped at 1 GB and cleared after every decision, so memory stays flat over long runs (before, it could grow by 10 GB or more over a few hundred decisions). Optional hard limit: `jev_mlx.load(..., memory_limit_gb=30)`. Results are unchanged.
+
 ## Credits and license
 
 Model: [autotrust/JEV-35B](https://huggingface.co/autotrust/JEV-35B) by AutoTrust AI (Apache-2.0), a fine-tune of [Qwen/Qwen3.5-35B-A3B](https://huggingface.co/Qwen/Qwen3.5-35B-A3B) (Apache-2.0). Runtime: [mlx-vlm](https://github.com/Blaizzy/mlx-vlm). Code in this repository: Apache-2.0. Port by Paris Michalas, Partner, NetProjects (Internet Projects Ltd). Not affiliated with AutoTrust AI.

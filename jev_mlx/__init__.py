@@ -2,4 +2,4 @@
 from .decide import Jev, load, load_image
 
 __all__ = ["Jev", "load", "load_image"]
-__version__ = "1.0.0"
+__version__ = "1.0.1"
